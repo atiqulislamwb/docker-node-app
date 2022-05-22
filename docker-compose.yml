@@ -1,0 +1,53 @@
+version: "3.9" # optional since v1.27.0
+services:
+  mongo:
+    image: mongo
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    networks:
+      - mynet
+    volumes:
+      - mongo_data:/data/db
+  elasticsearch:
+    image: elasticsearch:8.2.0
+    container_name: elasticsearch
+    ports:
+      - "9200:9200"
+    networks:
+      - mynet
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+  kibana:
+    image: kibana:8.2.0
+    container_name: kibana
+    ports:
+      - "5601:5601"
+    networks:
+      - mynet
+    volumes:
+      - kibana_data:/usr/share/kibana/data
+  thyselfapp:
+    image: thyselfapp
+    container_name: thyselfapp
+    ports:
+      - "3000:5000"
+    networks:
+      - mynet
+    volumes:
+      - thyselfapp_data:/usr/share/thyselfapp/data
+    environment:
+      - TEST=1
+      - HOST=mongo
+    depends_on:
+      - mongo
+      - elasticsearch
+      - kibana
+networks:
+  mynet:
+    driver: bridge
+volumes:
+  mongo_data:
+  elasticsearch_data:
+  kibana_data:
+  thyselfapp_data:
